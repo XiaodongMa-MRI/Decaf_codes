@@ -13,7 +13,7 @@ from skimage.morphology import skeletonize
 from scipy import ndimage
 from scipy.ndimage import distance_transform_edt, binary_dilation, generate_binary_structure
 
-SERVER = "http://localhost:8912"
+SERVER = "http://localhost:8913"
 
 
 # ── skeleton / segment helpers ──────────────────────────────────────────────

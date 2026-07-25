@@ -11,13 +11,14 @@ This pipeline processes 3D radial MRI data (960³, ~0.21mm isotropic) acquired w
 ```
 Decaf_codes/
 ├── step1_dicom2nifti/        # Data preprocessing
+├── step1p5_CSFMask/          # Initial CSFMask generation using FSL
 ├── step2_ADCcalculation/     # CSF segmentation & ADC maps
 ├── step3_itksnapvessel/      # Vessel segmentation & graph analysis
 └── step4_matlabpart/         # Visualization & statistics
 ```
 
 ### Step 1: DICOM → NIfTI preprocessing
-**`run_step1.py`** — Convert reconstructed DICOM to NIfTI, with optional processing
+**`function_step1.py`** — Convert reconstructed DICOM to NIfTI, with optional processing
 
 | Sub-step | Function | Description |
 |----------|----------|-------------|
@@ -26,8 +27,11 @@ Decaf_codes/
 | 1c | `downsample.py` | 960³ → 480³ (for FSL FAST input) |
 | 1d | `crop.py` | Center-crop to 480³ cube (for ITK-SNAP labeling) |
 
+### Step 1: DICOM → NIfTI preprocessing
+**`function_step1p5CSFMask.py`** — generate CSF mask using FSL (fast)
+
 ### Step 2: ADC calculation
-**`run_step2.py`** — CSF segmentation and ADC map generation (run in two stages)
+**`function_step2.py`** — CSF segmentation and ADC map generation (run in two stages)
 
 | Sub-step | Function | Description |
 |----------|----------|-------------|
@@ -37,10 +41,11 @@ Decaf_codes/
 | 2d | MATLAB (auto) | Convert csfmask.nii.gz → .mat via subprocess |
 | 2e | `adc_calculation.py` | ADC computation + bSSFP correction + CSF masking |
 
-ADC correction accounts for bSSFP steady-state signal model with parameters: d=22ms, TEp=52ms, TR=240ms, segment=32, TE=2.79ms, α=π/4, b=40 s/mm².
+ADC correction accounts for bSSFP steady-state signal model with default imaging parameters: d=22ms, TEp=52ms, TR=240ms, segment=32, TE=2.79ms, α=π/4, b=40 s/mm². 
+(change imaging parameters if different protocol is used)
 
 ### Step 3: Vessel segmentation & analysis
-**`run_step3.py`** — nnInteractive-based vessel labeling, graph construction, and pulsatility analysis
+**`function_step3.py`** — nnInteractive-based vessel labeling, graph construction, and pulsatility analysis
 
 | Sub-step | Function | Description |
 |----------|----------|-------------|
@@ -66,32 +71,22 @@ Outputs per vessel segment: dual-Y mean curve (area + ADC), 2×2 grid (traces + 
 ## Quick Start
 
 ```bash
-# Step 1: Preprocessing
-cd step1_dicom2nifti
-# Edit CONFIG in run_step1.py (subject ID, DICOM paths)
-python run_step1.py
+# Steps 1-2: Preprocessing and ADC
+python main_pipeline_before_vesselseg.py
 
-
-
-# Step 2: ADC
-# [External] Run FSL BET, FAST on 480 downsampled data, Run BET on 960 data for brain contour
-cd step2_ADCcalculation
-# Edit CONFIG in run_step2.py
-python run_step2.py           # Stage A: upsample + CSF seg + QC
-# Review QC image, then set RUN_ADC=True
-python run_step2.py           # Stage B: ADC calculation
-
+# [External] After Steps 1-2, do AI-assisted vessel segmentation using ITK-SNAP:
+# load the file "nifti_crop480_xxx/phase1.nii.gz" into ITK-SNAP, then segment the lumen of
+# the major Circle-Willis arteries in AI mode: BA, PCA, MCA (M1,M2), ACA;
+# save the segmentation file as "p1_m.nii.gz".
 
 # Step 3: Vessel analysis
-# [External] Start nnInteractive server (localhost:8912)
-# [External] Draw vessel mask in ITK-SNAP with nninteractive tool(save as p1_m.nii.gz)
+# [External] Start nnInteractive server (default: localhost:8913)
 
-cd step3_itksnapvessel
-# Edit CONFIG in run_step3.py
-python run_step3.py           # Part A: skeleton + phase 1, see if DICE is reasonable(>0.8)
-# Review in ITK-SNAP, set SKIP_SEGMENTS
-python run_step3.py           # Part B: all phases
-python run_step3.py           # Build graph + area/PI + export
+python main_pipeline_after_vesselseg_stageA.py # Part A: skeleton + phase 1
+# Check if DICE is reasonable(>0.8)
+
+# Review stageA results in ITK-SNAP, set SKIP_SEGMENTS in main_pipeline_after_vesselseg_stageBC.py
+python main_pipeline_after_vesselseg_stageBC.py # Part B: all phases + Build graph + area/PI + export
 
 # Step 4: Visualization (MATLAB)
 cd step4_matlabpart
@@ -131,7 +126,8 @@ cd step4_matlabpart
 ## References
 - DECAF: Diffusion-Prepared Cine bSSFP https://onlinelibrary.wiley.com/doi/epdf/10.1002/mrm.70381
 
-## Author
+## Authors
 
 Chang Ni (Nerissa) — Biomedical Engineering, University of Utah
-PI: Xiaodong Ma, Chun Yuan, Radiology and Imaging Sciences, University of Utah
+
+Xiaodong Ma, Radiology and Imaging Sciences, University of Utah

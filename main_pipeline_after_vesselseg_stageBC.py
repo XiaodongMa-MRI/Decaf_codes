@@ -45,7 +45,7 @@ BASE_DICOM    = "/v/ai/nobackup/xma/Trufi_BBCine_results/Dicom_960_Tsinghua" # b
 # set SKIP_SEGMENTS, confirm nnInteractive green light
 
 SUBJECT_SKIP_SEGMENTS_LIST = {
-    "20260512_Tsinghua_Subj1": [10, 18],
+    "20260512_Tsinghua_Subj1": [4],
 }
 
 # number of cardiac phases

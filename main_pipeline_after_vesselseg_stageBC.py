@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#!/usr/bin/env python3
 """
 Step 3: Vessel segmentation + analysis pipeline
 ================================================

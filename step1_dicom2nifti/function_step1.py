@@ -31,6 +31,10 @@ def function_step1(BASE_DICOM, SUBJECT_ID, B40_DICOM_DIR_S1, B0_DICOM_DIR_S1, N_
     # subfolder name for b0 dicom files (hard coded here, but can be changed if needed)
     B0_SUBDIR_S1     = "dicom_bbcine_combined" 
     B0_SUBDIR_S2     = "dicom_bbcine_combined"
+    
+    # subfolder name for b1 dicom files (hard coded here, but can be changed if needed)
+    B1_SUBDIR_S1     = "dicom_bbcine_combined" 
+    B1_SUBDIR_S2     = "dicom_bbcine_combined" 
 
     # --- 选择要跑哪些步骤 ---
     RUN_DICOM2NIFTI = True
@@ -63,11 +67,11 @@ def function_step1(BASE_DICOM, SUBJECT_ID, B40_DICOM_DIR_S1, B0_DICOM_DIR_S1, N_
     if RUN_DICOM2NIFTI:
         print("\n[Step 1a] DICOM -> NIfTI  (Scan 1)")
         convert_dicom_to_nifti(B40_DICOM_DIR_S1, nifti_dir_s1, N_PHASES,
-                            b0_dicom_dir=B0_DICOM_DIR_S1, b0_subdir=B0_SUBDIR_S1)
+                            b0_dicom_dir=B0_DICOM_DIR_S1, b0_subdir=B0_SUBDIR_S1, b40_combined_subdir=B1_SUBDIR_S1)
         if HAS_S2:
             print("\n[Step 1a] DICOM -> NIfTI  (Scan 2)")
             convert_dicom_to_nifti(B40_DICOM_DIR_S2, nifti_dir_s2, N_PHASES,
-                                b0_dicom_dir=B0_DICOM_DIR_S2, b0_subdir=B0_SUBDIR_S2)
+                                b0_dicom_dir=B0_DICOM_DIR_S2, b0_subdir=B0_SUBDIR_S2, b40_combined_subdir=B1_SUBDIR_S2)
 
     # ============================================================
     # Step 1b: Register scan2 -> scan1 (BEFORE downsample/crop)

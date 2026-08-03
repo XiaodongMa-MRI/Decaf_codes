@@ -26,7 +26,13 @@ import glob
 # and only one b1 folder containing "grasp" in the name.
 
 BASE_DICOM    = "/v/ai/nobackup/xma/Trufi_BBCine_results/Dicom_960_Tsinghua" # base dicom folder for all subjects
-'''SUBJECT_ID_LIST = [
+SUBJECT_ID_LIST = [
+    "20260424_Tsinghua_Subj1",
+    "20260424_Tsinghua_Subj2",
+    "20260424_Tsinghua_Subj3",
+    "20260428_Tsinghua_Subj1",
+    "20260428_Tsinghua_Subj2",
+    "20260428_Tsinghua_Subj3",
     "20260512_Tsinghua_Subj1",
     "20260512_Tsinghua_Subj2",
     "20260512_Tsinghua_Subj3",
@@ -38,9 +44,6 @@ BASE_DICOM    = "/v/ai/nobackup/xma/Trufi_BBCine_results/Dicom_960_Tsinghua" # b
     "20260609_Tsinghua_Subj1",
     "20260609_Tsinghua_Subj2",
     "20260609_Tsinghua_Subj3",
-]'''
-SUBJECT_ID_LIST = [
-    "20260512_Tsinghua_Subj1",
 ]
 
 # number of cardiac phases
@@ -64,13 +67,13 @@ def main():
         B0_DICOM_DIR_S1 = matches[0]
 
         # *** Step 1: DICOM -> NIfTI pipeline ***        
-        #function_step1.function_step1(BASE_DICOM, SUBJECT_ID, B40_DICOM_DIR_S1, B0_DICOM_DIR_S1, N_PHASES)
+        function_step1.function_step1(BASE_DICOM, SUBJECT_ID, B40_DICOM_DIR_S1, B0_DICOM_DIR_S1, N_PHASES)
 
         # *** Step 1p5: Generate CSF mask using FSL ***
-        #function_step1p5.function_step1p5(BASE_DICOM, SUBJECT_ID)
+       function_step1p5.function_step1p5(BASE_DICOM, SUBJECT_ID)
 
         # *** Step 2: ADC Calculation Pipeline ***
-        function_step2.function_step2(BASE_DICOM, SUBJECT_ID, B40_DICOM_DIR_S1, B0_DICOM_DIR_S1, N_PHASES, ADC_PARAMS)
+       function_step2.function_step2(BASE_DICOM, SUBJECT_ID, B40_DICOM_DIR_S1, B0_DICOM_DIR_S1, N_PHASES, ADC_PARAMS)
 
 
 if __name__ == "__main__":

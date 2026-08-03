@@ -13,7 +13,7 @@ def _convert_folder(dicom_dir, out_path):
 
 
 def convert_dicom_to_nifti(b40_dicom_dir, output_dir, n_phases=25,
-                            b0_dicom_dir=None, b0_subdir="dicom_bbcine_combined"):
+                            b0_dicom_dir=None, b0_subdir="dicom_bbcine_combined", b40_combined_subdir="dicom_bbcine_combined"):
     """Convert b40 phase DICOMs (and optionally b0) to NIfTI.
 
     Args:
@@ -22,6 +22,7 @@ def convert_dicom_to_nifti(b40_dicom_dir, output_dir, n_phases=25,
         n_phases      : number of cardiac phases (default 25)
         b0_dicom_dir  : folder containing the b0 DICOM subfolder (optional)
         b0_subdir     : name of the subfolder inside b0_dicom_dir (default "dicom_bbcine_combined")
+        b40_combined_subdir : name of the subfolder containing combined b40 DICOM files (default "dicom_bbcine_combined")
     """
     os.makedirs(output_dir, exist_ok=True)
 
@@ -61,5 +62,22 @@ def convert_dicom_to_nifti(b40_dicom_dir, output_dir, n_phases=25,
                 print(f"ERROR: {e}")
         else:
             print(f"  b0: SKIPPED ({b0_combined} not found)")
+
+
+    # --- b40 combined ---
+    if b40_combined_subdir:
+        b40_combined = os.path.join(b40_dicom_dir, b40_combined_subdir)
+        if os.path.isdir(b40_combined):
+            n_files = len(glob.glob(os.path.join(b40_combined, "*.dcm")))
+            print(f"  b40 combined        : {n_files} DICOM files ... ", end="", flush=True)
+            try:
+                out_path = os.path.join(output_dir, "b1_combined.nii.gz")
+                mb = _convert_folder(b40_combined, out_path)
+                print(f"OK ({mb:.1f} MB)")
+            except Exception as e:
+                print(f"ERROR: {e}")
+        else:
+            print(f"  b1 combined: SKIPPED ({b40_combined} not found)")
+
 
     print("\nDone!")

@@ -24,7 +24,8 @@ def function_step1p5(BASE_DICOM, SUBJECT_ID):
     source ${{FSLDIR}}/etc/fslconf/fsl.sh
     export PATH=${{FSLDIR}}/bin:${{PATH}}
 
-    bet2 "{nifti_dir_s1}/phase1.nii.gz" "{nifti_dir_s1}/phase1_480_brain.nii.gz" -f 0.25
+    synthstrip-singularity -i "{nifti_dir_s1}/b0.nii.gz" -o "{nifti_dir_s1}/phase1_480_brain.nii.gz" --threads 4
+    fslmaths "{nifti_dir_s1}/phase1_480_brain.nii.gz" "{nifti_dir_s1}/phase1_480_brain.nii.gz" -odt float
     fast -t 2 "{nifti_dir_s1}/phase1_480_brain.nii.gz"
     """
     #print(cmd)
